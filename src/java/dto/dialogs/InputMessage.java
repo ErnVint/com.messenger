@@ -82,6 +82,7 @@ public class InputMessage {
         for (Message x :
                 editList) {
             if (x.getMessage().equals(oldMessage) && x.getUser().equals(user) && x.getDate().isAfter(LocalDateTime.now().minusMinutes(1))) {
+                System.out.print("Message " + x.getMessage() + " was found. Type your edit: ");
                 x.setMessage(chat.nextLine());
                 x.setDate(LocalDateTime.now());
                 System.out.println("(edited) " + x.getUser().getLogin() + ": " + x.getMessage());

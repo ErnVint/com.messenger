@@ -2,9 +2,10 @@ package dto.dialogs;
 
 import dto.user.User;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Message {
+public class Message implements Serializable {
     private String message;
     private final User user;
     public LocalDateTime date;

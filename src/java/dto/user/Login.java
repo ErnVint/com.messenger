@@ -24,7 +24,7 @@ public class Login {
                 System.out.print("PASSWORD: ");
                 String password = scanner.nextLine();
                 ValidateUser validateUser = new ValidateUser(login, password);
-                if (validateUser.checkUser(users)) {
+                if (validateUser.checkUser(login, password, users)) {
                     System.out.println("Login successful.");
                     user = new User(login, password);
                     success = true;
@@ -51,7 +51,7 @@ public class Login {
                 System.out.print("PASSWORD: ");
                 String password = pwq;
                 ValidateUser validateUser = new ValidateUser(login, password);
-                if (validateUser.checkUser(users)) {
+                if (validateUser.checkUser(login, password, users)) {
                     System.out.println("Login successful.");
                     user = new User(userq, pwq);
                     success = true;

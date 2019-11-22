@@ -4,10 +4,10 @@ import dto.user.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Messenger {
     /**
@@ -23,10 +23,8 @@ public class Messenger {
      * 5. Можно писать отложенные сообщения
      **/
 
-    public static List<User> userList = new ArrayList<>();
-
+    public static Set<User> userSet = new HashSet<>();
     public static void main(String[] args) throws IOException {
-
         File users = new File("/Users/ernvint/IdeaProjects/com.messenger/src/java/res/Users.rtf");
         File history = new File("/Users/ernvint/IdeaProjects/com.messenger/src/java/res/History.rtf");
 
@@ -41,10 +39,10 @@ public class Messenger {
             } else {
                 System.out.print("PASSWORD: ");
                 String password = scanner.nextLine();
-                ValidateUser validateUser = new ValidateUser(login, password);
-                if (validateUser.checkUser(users)) {
-                    System.out.println("Login successful.");
-                    userList.add(new User(login, password));
+                IValidate validate = new ValidateUser(login, password);
+                if (validate.checkUser(login, password, users)) {
+                    if (!userSet.add(new User(login, password))) System.out.println("User already logged in");
+                    else System.out.println("Login successful.");
                     System.out.println("Add more users to chat? Type YES to add.");
                     if (!scanner.nextLine().equals("YES")){
                         endLogin = true;
@@ -57,7 +55,7 @@ public class Messenger {
         FileSaver fileSaver = new FileSaver(history);
         Message message = null;
         do {
-            for (User user : userList) {
+            for (User user : userSet) {
                 System.out.print(user.getLogin() + ":");
                 message = new Message(InputMessage.chat.nextLine(), user, LocalDateTime.now());
                 InputMessage.editList.add(message);
