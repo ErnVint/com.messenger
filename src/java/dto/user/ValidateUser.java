@@ -1,9 +1,11 @@
 package dto.user;
 
+import dto.io.FileSaver;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,14 +19,17 @@ public class ValidateUser implements IValidate {
         this.password = password;
     }
 
-    public boolean checkUser(String login, String password, File users) throws FileNotFoundException {
-        Scanner scanner = new Scanner(new FileReader(users));
-        Pattern pattern1 = Pattern.compile(".+login='" + login + "'.+password='" + password + "'}$");
-        while (scanner.hasNextLine()) {
-            String user = scanner.nextLine();
-            Matcher matcher = pattern1.matcher(user);
-            if (matcher.matches()) return true;
+    public boolean checkUser(String login, String password, File users) {
+        FileSaver fileSaver = new FileSaver(users);
+        Set<User> userList;
+        if ((userList = (Set<User>) fileSaver.readFromFile()) != null) {
+            for (User x :
+                    userList) {
+                if (login.equals(x.getLogin()) && password.equals(x.getPassword())) return true;
+            }
         }
         return false;
     }
+
+
 }

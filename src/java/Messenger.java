@@ -1,15 +1,14 @@
 import dto.dialogs.*;
 import dto.io.FileSaver;
 import dto.user.*;
-
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Messenger {
+
     /**
      * Мессенджер
      * 1. Вводить ник:
@@ -24,9 +23,15 @@ public class Messenger {
      **/
 
     public static Set<User> userSet = new HashSet<>();
+
     public static void main(String[] args) throws IOException {
-        File users = new File("/Users/ernvint/IdeaProjects/com.messenger/src/java/res/Users.rtf");
-        File history = new File("/Users/ernvint/IdeaProjects/com.messenger/src/java/res/History.rtf");
+
+        File users = new File(System.getProperty("java.io.tmpdir") + File.separator + "users.txt");
+        System.out.println("Users saved here: " + users.getAbsolutePath());
+                //"./src/java/res/Users.rtf");
+        File history = new File(System.getProperty("java.io.tmpdir") + File.separator + "history.txt");
+        System.out.println("History saved here: " + history.getAbsolutePath());
+
 
         System.out.println("Type in your username and password or REGNEW and empty password to register.");
         Scanner scanner = new Scanner(System.in);
@@ -44,7 +49,7 @@ public class Messenger {
                     if (!userSet.add(new User(login, password))) System.out.println("User already logged in");
                     else System.out.println("Login successful.");
                     System.out.println("Add more users to chat? Type YES to add.");
-                    if (!scanner.nextLine().equals("YES")){
+                    if (!scanner.nextLine().equals("YES")) {
                         endLogin = true;
                     }
                 } else {
@@ -52,8 +57,14 @@ public class Messenger {
                 }
             }
         } while (!endLogin);
-        FileSaver fileSaver = new FileSaver(history);
+        FileSaver historySaver = new FileSaver(history);
         Message message = null;
+        if ((InputMessage.messageList = (List<Message>) historySaver.readFromFile()) == null)
+            InputMessage.messageList = new ArrayList<>();
+        else for (Message x:
+                  InputMessage.messageList) {
+            System.out.println(x.getUserLogin() + ": " + x.getMessage() + "            date: " + x.getDate().format(DateTimeFormatter.ofPattern("HH:mm:ss d MMM uu")));
+        }
         do {
             for (User user : userSet) {
                 System.out.print(user.getLogin() + ":");
@@ -69,10 +80,15 @@ public class Messenger {
                     System.out.println("Delay message");
                     InputMessage.inputDelayedMessage(user);
                 }
-                fileSaver.printToFile(message.toString());
-                if (InputMessage.delayedMessageList.size() > 0) InputMessage.checkDelayedMessage(fileSaver);
+                InputMessage.messageList.add(message);
+                if (InputMessage.delayedMessageList.size() > 0) InputMessage.checkDelayedMessage(historySaver);
                 InputMessage.editList.removeIf(x -> (x.getDate().isBefore(LocalDateTime.now().minusMinutes(1))));
             }
         } while (!(message.getMessage()).equals("EXIT"));
+        for (Message x:
+        InputMessage.messageList) {
+            System.out.println(x.getUserLogin() + ": " + x.getMessage() + "            date: " + x.getDate().format(DateTimeFormatter.ofPattern("HH:mm:ss d MMM uu")));
+        }
+        historySaver.printToFile(InputMessage.messageList);
     }
 }

@@ -15,6 +15,8 @@ public class InputMessage {
     public static LocalDateTime publishTime = LocalDateTime.now();
     public static List<Message> editList = new ArrayList<>();
     public static List<Message> delayedMessageList = new ArrayList<>();
+    public static List<Message> messageList = new ArrayList<>();
+
 
     public static Scanner chat = new Scanner(System.in);
 
@@ -37,7 +39,7 @@ public class InputMessage {
                     System.out.println("Delay message");
                     inputDelayedMessage(user);
                 }
-                fileSaver.printToFile(message.toString());
+                messageList.add(message);
                 if (delayedMessageList.size() > 0) checkDelayedMessage(fileSaver);
                 editList.removeIf(x -> (x.getDate().isBefore(LocalDateTime.now().minusMinutes(1))));
             }
@@ -67,8 +69,8 @@ public class InputMessage {
         for (Message x :
                 delayedMessageList) {
             if (x.getDate().isBefore(LocalDateTime.now())) {
-                System.out.println(x.getUser().getLogin() + "(delayed): " + x.getMessage());
-                fileSaver.printToFile(x.toString());
+                System.out.println(x.getUserLogin() + "(delayed): " + x.getMessage());
+                messageList.add(x);
             }
         }
         delayedMessageList.removeIf(x -> (x.getDate().isBefore(LocalDateTime.now())));
@@ -78,15 +80,16 @@ public class InputMessage {
     public static void editMessage(User user) {
         System.out.println("Only 1 minute old messages are editable. Type old message");
         String oldMessage = chat.nextLine();
+        Collections.sort(editList);
         Collections.reverse(editList);
         for (Message x :
                 editList) {
-            if (x.getMessage().equals(oldMessage) && x.getUser().equals(user) && x.getDate().isAfter(LocalDateTime.now().minusMinutes(1))) {
+            if (x.getMessage().equals(oldMessage) && x.getUserLogin().equals(user.getLogin()) && x.getDate().isAfter(LocalDateTime.now().minusMinutes(1))) {
                 System.out.print("Message " + x.getMessage() + " was found. Type your edit: ");
-                x.setMessage(chat.nextLine());
+                x.setMessage("(edited)"+ chat.nextLine());
                 x.setDate(LocalDateTime.now());
-                System.out.println("(edited) " + x.getUser().getLogin() + ": " + x.getMessage());
-            } else if (x.getMessage().equals(oldMessage) && x.getUser().equals(user) && !x.getDate().isAfter(LocalDateTime.now().minusMinutes(1))) {
+                System.out.println("(edited) " + x.getUserLogin() + ": " + x.getMessage());
+            } else if (x.getMessage().equals(oldMessage) && x.getUserLogin().equals(user) && !x.getDate().isAfter(LocalDateTime.now().minusMinutes(1))) {
                 System.out.println("Old message cannot be edited.");
             }
         }

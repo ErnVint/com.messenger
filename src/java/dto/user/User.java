@@ -3,7 +3,7 @@ package dto.user;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class User implements Serializable {
+public class User implements Serializable, Comparable {
     private String login;
     private String password;
     private int userID = 0;
@@ -61,5 +61,10 @@ public class User implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(login);
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        return 0;
     }
 }

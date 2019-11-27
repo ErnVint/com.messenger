@@ -1,9 +1,6 @@
 package dto.io;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 public class FileSaver implements IHistorySaver {
 
@@ -18,11 +15,28 @@ public class FileSaver implements IHistorySaver {
         //....
     }
 
-    public void printToFile (String string) throws IOException {
-        FileWriter fw = new FileWriter(this.stream,true);
-        BufferedWriter bw = new BufferedWriter(fw);
-        bw.write(string+"\n");
-        bw.close();
+    public void printToFile(Object o) {
+//        FileWriter fw = new FileWriter(this.stream,true);
+//        BufferedWriter bw = new BufferedWriter(fw);
+//        bw.write(string+"\n");
+//        bw.close();
+        try (ObjectOutputStream toFile = new ObjectOutputStream(new FileOutputStream(stream))) {
+            toFile.writeObject(o);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public Object readFromFile() {
+        Object o = null;
+        try (ObjectInputStream fromFile = new ObjectInputStream(new FileInputStream(stream))) {
+            o = fromFile.readObject();
+        } catch (ClassNotFoundException | IOException e) {
+            return o;
+        }
+        return o;
 
     }
 }

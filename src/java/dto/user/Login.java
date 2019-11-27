@@ -11,7 +11,8 @@ import java.util.Scanner;
 public class Login {
     public static User user;
 
-    public static void login(File users) throws IOException {
+
+    public static void login(File users) throws IOException, ClassNotFoundException {
         System.out.println("Type in your username and password or REGNEW to register.");
         Scanner scanner = new Scanner(System.in);
         boolean success = false;
